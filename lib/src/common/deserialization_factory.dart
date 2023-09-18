@@ -77,6 +77,8 @@ mixin DeserializeCommandFactory {
         return Tap.deserialize(params, finderFactory);
       case 'drag':
         return Drag.deserialize(params);
+      case 'get_element_count':
+        return GetElementCount.deserialize(params, finderFactory);
       case 'waitFor':
         return WaitFor.deserialize(params, finderFactory);
       case 'waitForAbsent':
