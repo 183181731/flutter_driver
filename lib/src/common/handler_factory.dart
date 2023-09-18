@@ -34,30 +34,37 @@ mixin CreateFinderFactory {
   /// Creates the flutter widget finder from [SerializableFinder].
   Finder createFinder(SerializableFinder finder) {
     final String finderType = finder.finderType;
+    Finder element;
     switch (finderType) {
       case 'ByText':
-        return _createByTextFinder(finder as ByText);
+        element = _createByTextFinder(finder as ByText);
       case 'ByTooltipMessage':
-        return _createByTooltipMessageFinder(finder as ByTooltipMessage);
+        element = _createByTooltipMessageFinder(finder as ByTooltipMessage);
       case 'BySemanticsLabel':
-        return _createBySemanticsLabelFinder(finder as BySemanticsLabel);
+        element = _createBySemanticsLabelFinder(finder as BySemanticsLabel);
       case 'ByValueKey':
-        return _createByValueKeyFinder(finder as ByValueKey);
+        element = _createByValueKeyFinder(finder as ByValueKey);
       case 'ByType':
-        return _createByTypeFinder(finder as ByType);
+        element = _createByTypeFinder(finder as ByType);
       case 'PageBack':
         return _createPageBackFinder();
       case 'Ancestor':
-        return _createAncestorFinder(finder as Ancestor);
+        element = _createAncestorFinder(finder as Ancestor);
       case 'Descendant':
-        return _createDescendantFinder(finder as Descendant);
+        element = _createDescendantFinder(finder as Descendant);
       default:
         throw DriverError('Unsupported search specification type $finderType');
+    }
+    if(finder.index == '-1') {
+      return element;
+    }
+    else {
+      return element.at(int.parse(finder.index));
     }
   }
 
   Finder _createByTextFinder(ByText arguments) {
-    return find.text(arguments.text).at(int.parse(arguments.index));
+    return find.text(arguments.text);
   }
 
   Finder _createByTooltipMessageFinder(ByTooltipMessage arguments) {
@@ -101,8 +108,7 @@ mixin CreateFinderFactory {
   Finder _createByTypeFinder(ByType arguments) {
     return find.byElementPredicate((Element element) {
       return element.widget.runtimeType.toString() == arguments.type;
-    }, description: 'widget with runtimeType "${arguments.type}"').at(
-        int.parse(arguments.index));
+    }, description: 'widget with runtimeType "${arguments.type}"');
   }
 
   Finder _createPageBackFinder() {
@@ -187,6 +193,8 @@ mixin CommandHandlerFactory {
         return _tap(command, prober, finderFactory);
       case 'drag':
         return _drag(command, prober);
+      case 'get_element_count':
+        return _getElementCount(command, finderFactory);
       case 'waitFor':
         return _waitFor(command, finderFactory);
       case 'waitForAbsent':
@@ -278,6 +286,17 @@ mixin CommandHandlerFactory {
     final WaitFor waitForCommand = command as WaitFor;
     await waitForElement(finderFactory.createFinder(waitForCommand.finder));
     return Result.empty;
+  }
+
+
+  Future<GetElementCountResult> _getElementCount(
+      Command command, CreateFinderFactory finderFactory) async {
+    final GetElementCount getElementCount = command as GetElementCount;
+    final Finder target =
+        await waitForElement(finderFactory.createFinder(getElementCount.finder));
+
+    int? count = target.evaluate().length; 
+    return GetElementCountResult(count);
   }
 
   Future<Result> _waitForAbsent(
