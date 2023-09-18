@@ -368,7 +368,7 @@ class Ancestor extends SerializableFinder {
       required this.matching,
       this.matchRoot = false,
       this.firstMatchOnly = false,
-      this.index = '0'});
+      required this.index});
 
   final String index;
 

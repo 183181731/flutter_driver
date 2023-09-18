@@ -768,19 +768,19 @@ class CommonFinders {
 
   /// Finds [widgets.Text] and [widgets.EditableText] widgets containing string
   /// equal to [text].
-  SerializableFinder text(String text) => ByText(text);
+  SerializableFinder text(String text, String index) => ByText(text, index);
 
   /// Finds widgets by [key]. Only [String] and [int] values can be used.
-  SerializableFinder byValueKey(dynamic key) => ByValueKey(key);
+  SerializableFinder byValueKey(dynamic key, String index) => ByValueKey(key, index);
 
   /// Finds widgets with a tooltip with the given [message].
-  SerializableFinder byTooltip(String message) => ByTooltipMessage(message);
+  SerializableFinder byTooltip(String message, String index) => ByTooltipMessage(message, index);
 
   /// Finds widgets with the given semantics [label].
-  SerializableFinder bySemanticsLabel(Pattern label) => BySemanticsLabel(label);
+  SerializableFinder bySemanticsLabel(Pattern label, String index) => BySemanticsLabel(label, index);
 
   /// Finds widgets whose class name matches the given string.
-  SerializableFinder byType(String type) => ByType(type);
+  SerializableFinder byType(String type, String index) => ByType(type, index);
 
   /// Finds the back button on a Material or Cupertino page's scaffold.
   SerializableFinder pageBack() => const PageBack();
@@ -797,8 +797,9 @@ class CommonFinders {
     required SerializableFinder of,
     required SerializableFinder matching,
     bool matchRoot = false,
-    bool firstMatchOnly = false,
-  }) => Ancestor(of: of, matching: matching, matchRoot: matchRoot, firstMatchOnly: firstMatchOnly);
+    bool firstMatchOnly = false, 
+    required index,
+  }) => Ancestor(of: of, matching: matching, matchRoot: matchRoot, firstMatchOnly: firstMatchOnly, index: index);
 
   /// Finds the widget that is an descendant of the `of` parameter and that
   /// matches the `matching` parameter.
@@ -813,7 +814,8 @@ class CommonFinders {
     required SerializableFinder matching,
     bool matchRoot = false,
     bool firstMatchOnly = false,
-  }) => Descendant(of: of, matching: matching, matchRoot: matchRoot, firstMatchOnly: firstMatchOnly);
+    required index,
+  }) => Descendant(of: of, matching: matching, matchRoot: matchRoot, firstMatchOnly: firstMatchOnly,  index: index);
 }
 
 /// An immutable 2D floating-point offset used by Flutter Driver.
